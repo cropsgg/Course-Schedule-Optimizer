@@ -1,0 +1,350 @@
+:root {
+    --primary-color: #4f46e5;
+    --primary-hover: #4338ca;
+    --secondary-color: #6b7280;
+    --background-color: #f9fafb;
+    --surface-color: #ffffff;
+    --text-primary: #111827;
+    --text-secondary: #4b5563;
+    --border-color: #e5e7eb;
+    --success-color: #10b981;
+    --error-color: #ef4444;
+    --theory-color: #93c5fd;
+    --lab-color: #c4b5fd;
+    --break-color: #fecaca;
+    --extramural-color: #fcd34d;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-primary);
+    line-height: 1.5;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.building-info {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+main {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: 1fr 2fr;
+    margin-bottom: 2rem;
+}
+
+.input-section {
+    background-color: var(--surface-color);
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+input, select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.375rem;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.375rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn.primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn.primary:hover {
+    background-color: var(--primary-hover);
+}
+
+.btn.secondary {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.btn.secondary:hover {
+    background-color: #4b5563;
+}
+
+.btn.danger {
+    background-color: var(--error-color);
+    color: white;
+}
+
+.btn.danger:hover {
+    background-color: #dc2626;
+}
+
+.schedule-details {
+    background-color: var(--surface-color);
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.course-list-container {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+}
+
+.course-list {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.course-list th,
+.course-list td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.course-list th {
+    background-color: var(--background-color);
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.course-list tr:last-child td {
+    border-bottom: none;
+}
+
+.actions-section {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-start;
+    margin-top: auto;
+}
+
+.timetable-section {
+    background-color: var(--surface-color);
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+}
+
+.info-box {
+    background-color: rgba(79, 70, 229, 0.1);
+    border-left: 4px solid var(--primary-color);
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border-radius: 0 0.25rem 0.25rem 0;
+}
+
+.info-box p {
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+}
+
+.info-box p:last-child {
+    margin-bottom: 0;
+}
+
+.timetable-container {
+    overflow-x: auto;
+}
+
+.timetable {
+    min-width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.timetable th,
+.timetable td {
+    border: 1px solid var(--border-color);
+    padding: 0.5rem;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 0.9rem;
+}
+
+.timetable th {
+    font-weight: 500;
+    background-color: var(--primary-color);
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.timetable th.time-header {
+    width: 5rem;
+}
+
+.timetable td.time-slot {
+    font-weight: 500;
+    text-align: right;
+    padding-right: 0.75rem;
+    background-color: var(--background-color);
+    width: 5rem;
+}
+
+.timetable td.extramural {
+    background-color: var(--extramural-color);
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.timetable td.break {
+    background-color: var(--break-color);
+    font-style: italic;
+    color: var(--text-secondary);
+}
+
+.course-cell {
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.course-cell.theory {
+    background-color: var(--theory-color);
+}
+
+.course-cell.lab {
+    background-color: var(--lab-color);
+}
+
+.course-name {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.course-instructor {
+    font-size: 0.8rem;
+}
+
+.course-room {
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.notification {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    padding: 1rem 1.5rem;
+    border-radius: 0.375rem;
+    background-color: var(--surface-color);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transform: translateY(150%);
+    transition: transform 0.3s ease-in-out;
+    z-index: 1000;
+}
+
+.notification.show {
+    transform: translateY(0);
+}
+
+.notification.success {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.notification.error {
+    background-color: var(--error-color);
+    color: white;
+}
+
+.notification.warning {
+    background-color: #f59e0b;
+    color: white;
+}
+
+@media (max-width: 1200px) {
+    main {
+        grid-template-columns: 1fr;
+    }
+    
+    .container {
+        padding: 1rem;
+    }
+    
+    h1 {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .actions-section {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+    }
+} 

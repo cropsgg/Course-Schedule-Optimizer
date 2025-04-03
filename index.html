@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Schedule Optimizer</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Course Schedule Optimizer</h1>
+            <p class="subtitle">Generate optimal course timetables with advanced algorithms</p>
+            <p class="building-info">Building AB3: 7 Floors, 15 Rooms per Floor</p>
+        </header>
+
+        <main>
+            <section class="input-section">
+                <h2>Course Information</h2>
+                <div class="form-group">
+                    <label for="courseName">Course Name</label>
+                    <input type="text" id="courseName" placeholder="Enter course name">
+                </div>
+                <div class="form-group">
+                    <label for="courseCode">Course Code</label>
+                    <input type="text" id="courseCode" placeholder="Enter course code">
+                </div>
+                <div class="form-group">
+                    <label for="instructor">Instructor</label>
+                    <input type="text" id="instructor" placeholder="Enter instructor name">
+                </div>
+                <div class="form-group">
+                    <label for="classType">Class Type</label>
+                    <select id="classType">
+                        <option value="theory">Theory (1 slot)</option>
+                        <option value="lab">Lab (2 slots)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="floor">Floor</label>
+                    <select id="floor">
+                        <option value="">Auto-assign</option>
+                        <option value="1">Floor 1</option>
+                        <option value="2">Floor 2</option>
+                        <option value="3">Floor 3</option>
+                        <option value="4">Floor 4</option>
+                        <option value="5">Floor 5</option>
+                        <option value="6">Floor 6</option>
+                        <option value="7">Floor 7</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="room">Room Number</label>
+                    <select id="room">
+                        <option value="">Auto-assign</option>
+                        <option value="1">Room 1</option>
+                        <option value="2">Room 2</option>
+                        <option value="3">Room 3</option>
+                        <option value="4">Room 4</option>
+                        <option value="5">Room 5</option>
+                        <option value="6">Room 6</option>
+                        <option value="7">Room 7</option>
+                        <option value="8">Room 8</option>
+                        <option value="9">Room 9</option>
+                        <option value="10">Room 10</option>
+                        <option value="11">Room 11</option>
+                        <option value="12">Room 12</option>
+                        <option value="13">Room 13</option>
+                    </select>
+                </div>
+                <button id="addCourse" class="btn primary">Add Course</button>
+            </section>
+
+            <section class="schedule-details">
+                <h2>Current Courses</h2>
+                <div class="course-list-container">
+                    <table id="courseList" class="course-list">
+                        <thead>
+                            <tr>
+                                <th>Course</th>
+                                <th>Instructor</th>
+                                <th>Type</th>
+                                <th>Room</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Course list will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="actions-section">
+                    <button id="generateSchedule" class="btn primary">Generate Optimal Schedule</button>
+                    <button id="clearSchedule" class="btn secondary">Clear All</button>
+                </div>
+            </section>
+        </main>
+
+        <section class="timetable-section">
+            <h2>Weekly Timetable</h2>
+            <div class="info-box">
+                <p>Time slots: 50 minutes with 5-minute breaks | Extra-mural hour: 1:20 PM - 2:00 PM</p>
+                <p>Rooms 14 and 15 on each floor are reserved for teachers</p>
+            </div>
+            <div id="timetable" class="timetable-container">
+                <!-- Timetable will be generated here -->
+            </div>
+        </section>
+
+        <div id="notification" class="notification"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html> 
