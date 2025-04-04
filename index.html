@@ -47,6 +47,32 @@
                         <option value="5">5 classes per week (daily)</option>
                     </select>
                 </div>
+                <div id="daySelectionContainer" class="form-group day-selection">
+                    <label>Preferred Days</label>
+                    <div class="checkbox-group">
+                        <div class="form-checkbox day-checkbox">
+                            <input type="checkbox" id="dayMonday" class="day-select" value="Monday" checked>
+                            <label for="dayMonday">Monday</label>
+                        </div>
+                        <div class="form-checkbox day-checkbox">
+                            <input type="checkbox" id="dayTuesday" class="day-select" value="Tuesday" checked>
+                            <label for="dayTuesday">Tuesday</label>
+                        </div>
+                        <div class="form-checkbox day-checkbox">
+                            <input type="checkbox" id="dayWednesday" class="day-select" value="Wednesday" checked>
+                            <label for="dayWednesday">Wednesday</label>
+                        </div>
+                        <div class="form-checkbox day-checkbox">
+                            <input type="checkbox" id="dayThursday" class="day-select" value="Thursday">
+                            <label for="dayThursday">Thursday</label>
+                        </div>
+                        <div class="form-checkbox day-checkbox">
+                            <input type="checkbox" id="dayFriday" class="day-select" value="Friday">
+                            <label for="dayFriday">Friday</label>
+                        </div>
+                    </div>
+                    <p class="day-selection-info">Please select exactly <span id="requiredDays">3</span> days</p>
+                </div>
                 <div class="form-group">
                     <label for="floor">Floor</label>
                     <select id="floor">
@@ -96,6 +122,7 @@
                                 <th>Instructor</th>
                                 <th>Type</th>
                                 <th>Classes/Week</th>
+                                <th>Days</th>
                                 <th>Room</th>
                                 <th>Actions</th>
                             </tr>

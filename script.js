@@ -19,16 +19,18 @@ class Course {
      * @param {string} instructor - The name of the instructor teaching the course
      * @param {string} type - The type of course: 'theory' or 'lab'
      * @param {number} classesPerWeek - Number of times this course meets per week (1-5)
+     * @param {Array<string>} preferredDays - Preferred days for scheduling (if specified)
      * @param {boolean} consistentRoom - Whether to use the same room for all classes
      * @param {number|null} floor - Optional preferred floor (1-7)
      * @param {number|null} room - Optional preferred room (1-13)
      */
-    constructor(name, code, instructor, type, classesPerWeek = 3, consistentRoom = true, floor = null, room = null) {
+    constructor(name, code, instructor, type, classesPerWeek = 3, preferredDays = [], consistentRoom = true, floor = null, room = null) {
         this.name = name;
         this.code = code;
         this.instructor = instructor;
         this.type = type; // 'theory' or 'lab'
         this.classesPerWeek = classesPerWeek; // Number of classes per week (1-5)
+        this.preferredDays = preferredDays; // Array of preferred days for scheduling
         this.consistentRoom = consistentRoom; // Whether to use same room for all classes
         this.floor = floor;
         this.room = room;
@@ -97,6 +99,17 @@ class Course {
                 .map(([roomId, count]) => `${roomId} (${count}x)`)
                 .join(', ');
         }
+    }
+    
+    /**
+     * Get formatted list of preferred days
+     * @return {string} Comma-separated list of preferred days
+     */
+    get preferredDaysDisplay() {
+        if (this.preferredDays && this.preferredDays.length > 0) {
+            return this.preferredDays.join(', ');
+        }
+        return 'Auto-assign';
     }
 }
 
@@ -274,18 +287,35 @@ class Schedule {
         const availableSlots = [];
         const duration = course.duration;
         
-        // Calculate ideal spacing between classes
-        const idealGap = Math.floor(this.days.length / count);
-        
-        // Preferred days for evenly distributed classes
-        const preferredDays = [];
-        for (let i = 0; i < count; i++) {
-            const dayIndex = (i * idealGap) % this.days.length;
-            preferredDays.push(this.days[dayIndex]);
+        // Use preferred days if specified, otherwise use all days
+        let preferredDays = course.preferredDays && course.preferredDays.length > 0 
+            ? [...course.preferredDays] 
+            : [...this.days];
+            
+        // If specific days were selected but not enough, add more to reach count
+        if (preferredDays.length < count) {
+            const additionalDays = this.days.filter(day => !preferredDays.includes(day));
+            preferredDays = preferredDays.concat(additionalDays.slice(0, count - preferredDays.length));
         }
         
-        // First try preferred days for better distribution
-        for (const day of preferredDays) {
+        // Calculate ideal spacing between classes (if no specific days selected)
+        const idealGap = Math.floor(preferredDays.length / count);
+        
+        // Order days optimally for distribution
+        const orderedDays = [];
+        if (course.preferredDays && course.preferredDays.length > 0) {
+            // If preferred days are specified, use them in the provided order
+            orderedDays.push(...preferredDays);
+        } else {
+            // Otherwise, distribute evenly 
+            for (let i = 0; i < count; i++) {
+                const dayIndex = (i * idealGap) % preferredDays.length;
+                orderedDays.push(preferredDays[dayIndex]);
+            }
+        }
+        
+        // First try the ordered days
+        for (const day of orderedDays) {
             if (availableSlots.length >= count) break;
             
             // Search all time slots on this day
@@ -301,30 +331,9 @@ class Schedule {
             }
         }
         
-        // If we still need more slots, search the remaining days
-        if (availableSlots.length < count) {
-            // Get days we haven't checked yet
-            const remainingDays = this.days.filter(day => !preferredDays.includes(day));
-            
-            for (const day of remainingDays) {
-                if (availableSlots.length >= count) break;
-                
-                // Search all time slots on this day
-                for (let i = 0; i < this.timeSlots.length; i++) {
-                    if (this.isTimeSlotAvailable(day, i, duration)) {
-                        availableSlots.push({
-                            day,
-                            timeSlot: this.timeSlots[i],
-                            timeIndex: i
-                        });
-                        break; // Found a slot for this day
-                    }
-                }
-            }
-        }
-        
-        // If we still don't have enough slots, try additional time slots on days we already have
-        if (availableSlots.length < count) {
+        // If we still need more slots and user didn't specify preferred days,
+        // try additional time slots on days we already have
+        if (availableSlots.length < count && (!course.preferredDays || course.preferredDays.length === 0)) {
             // Get days we've already scheduled at least one class
             const usedDays = availableSlots.map(slot => slot.day);
             
@@ -668,6 +677,22 @@ class Schedule {
             const classesCell = document.createElement('td');
             classesCell.textContent = course.classesPerWeek;
             
+            // Preferred days cell
+            const daysCell = document.createElement('td');
+            if (course.preferredDays && course.preferredDays.length > 0) {
+                const daysList = document.createElement('div');
+                daysList.className = 'days-list';
+                course.preferredDays.forEach(day => {
+                    const dayTag = document.createElement('span');
+                    dayTag.className = 'day-tag';
+                    dayTag.textContent = day.substring(0, 3); // First three letters
+                    daysList.appendChild(dayTag);
+                });
+                daysCell.appendChild(daysList);
+            } else {
+                daysCell.textContent = 'Auto';
+            }
+            
             // Room assignment cell
             const roomCell = document.createElement('td');
             roomCell.textContent = course.scheduled ? course.roomSummary : 'Not scheduled';
@@ -685,6 +710,7 @@ class Schedule {
             row.appendChild(instructorCell);
             row.appendChild(typeCell);
             row.appendChild(classesCell);
+            row.appendChild(daysCell);
             row.appendChild(roomCell);
             row.appendChild(actionsCell);
             
@@ -840,6 +866,62 @@ document.addEventListener('DOMContentLoaded', () => {
     const classTypeSelect = document.getElementById('classType');
     const classesPerWeekSelect = document.getElementById('classesPerWeek');
     const consistentRoomCheckbox = document.getElementById('consistentRoom');
+    const daySelectionContainer = document.getElementById('daySelectionContainer');
+    const dayCheckboxes = document.querySelectorAll('.day-select');
+    const requiredDaysSpan = document.getElementById('requiredDays');
+
+    /**
+     * Update day selection visibility based on classes per week
+     * Show day selection only for 3 or 5 classes per week
+     */
+    function updateDaySelectionVisibility() {
+        const classesPerWeek = parseInt(classesPerWeekSelect.value);
+        if (classesPerWeek === 3 || classesPerWeek === 5) {
+            daySelectionContainer.style.display = 'block';
+            requiredDaysSpan.textContent = classesPerWeek;
+            
+            // Pre-select days based on number of classes
+            let checkedCount = 0;
+            dayCheckboxes.forEach(checkbox => {
+                checkbox.checked = checkedCount < classesPerWeek && 
+                                  (checkbox.value === 'Monday' || 
+                                   checkbox.value === 'Tuesday' || 
+                                   checkbox.value === 'Wednesday' ||
+                                   (classesPerWeek === 5 && 
+                                    (checkbox.value === 'Thursday' || 
+                                     checkbox.value === 'Friday')));
+                if (checkbox.checked) checkedCount++;
+            });
+        } else {
+            daySelectionContainer.style.display = 'none';
+        }
+    }
+
+    /**
+     * Enforce selection of exactly the required number of days
+     */
+    function enforceDaySelectionLimit() {
+        const classesPerWeek = parseInt(classesPerWeekSelect.value);
+        const checkedDays = document.querySelectorAll('.day-select:checked');
+        
+        if (checkedDays.length > classesPerWeek) {
+            // If too many are selected, uncheck the last one
+            this.checked = false;
+        }
+    }
+
+    /**
+     * Get selected days from checkboxes
+     */
+    function getSelectedDays() {
+        const selectedDays = [];
+        dayCheckboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                selectedDays.push(checkbox.value);
+            }
+        });
+        return selectedDays;
+    }
 
     /**
      * Dynamic room selection handler
@@ -898,6 +980,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 classesPerWeekSelect.appendChild(option);
             }
         }
+        
+        // Update day selection visibility
+        updateDaySelectionVisibility();
+    });
+
+    /**
+     * Classes per week change handler
+     */
+    classesPerWeekSelect.addEventListener('change', updateDaySelectionVisibility);
+    
+    /**
+     * Day selection change handler
+     */
+    dayCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', enforceDaySelectionLimit);
     });
 
     /**
@@ -914,6 +1011,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const consistentRoom = document.getElementById('consistentRoom').checked;
         const floor = floorSelect.value ? parseInt(floorSelect.value) : null;
         const room = roomSelect.value ? parseInt(roomSelect.value) : null;
+        
+        // Get preferred days if applicable
+        let preferredDays = [];
+        if (classesPerWeek === 3 || classesPerWeek === 5) {
+            preferredDays = getSelectedDays();
+            
+            // Validate day selection
+            if (preferredDays.length !== classesPerWeek) {
+                schedule.showNotification(`Please select exactly ${classesPerWeek} days!`, 'error');
+                return;
+            }
+        }
 
         // Validate required fields
         if (!courseName || !courseCode || !instructor) {
@@ -934,6 +1043,7 @@ document.addEventListener('DOMContentLoaded', () => {
             instructor, 
             classType, 
             classesPerWeek,
+            preferredDays,
             consistentRoom,
             floor, 
             room
@@ -949,6 +1059,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('consistentRoom').checked = true;
         document.getElementById('floor').value = '';
         document.getElementById('room').innerHTML = '<option value="">Auto-assign</option>';
+        
+        // Reset day selection
+        updateDaySelectionVisibility();
     });
 
     /**
@@ -971,4 +1084,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Initialize the class type dropdown to set correct classes per week options
     classTypeSelect.dispatchEvent(new Event('change'));
+    
+    // Initialize day selection visibility
+    updateDaySelectionVisibility();
 }); 
